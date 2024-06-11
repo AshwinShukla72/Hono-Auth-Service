@@ -1,12 +1,12 @@
 // Imports
 import { Hono } from "hono";
 
-import { authSchema } from "../schemas/auth.schema";
+import { emailLoginAuth } from "../schemas/auth.schema";
 import { zValidator } from "@hono/zod-validator";
 import { HTTPException } from "hono/http-exception";
 
 export const authRoute = new Hono()
-	.post("/login", zValidator("json", authSchema), async (c) => {
+	.post("/login", zValidator("json", emailLoginAuth), async (c) => {
 		// c.req.json() returns a promise so, we have to the response
 		const body = await c.req.json();
 		if (!body) throw new HTTPException(400, { message: "Invalid Data" });
@@ -15,7 +15,7 @@ export const authRoute = new Hono()
 		if (!email || !password) {
 			throw new HTTPException(400, { message: "Password or Email not shared" });
 		}
-		if (password !== "ashwin7298!") {
+		if (password) {
 			throw new HTTPException(401, { message: "Unauthorized" });
 		}
 		return c.json({success: true, message: "Access Granted"});
