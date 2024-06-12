@@ -14,10 +14,46 @@ datasource db {
 }
 
 model User {
-  id            String @id @default(uuid())
-  fullName      String 
-  email         String @unique
-  password      String
-  userName      String @unique
-  contactNumber String 
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  UserRole     UserRole[]
+  Session      Session[]
+
+  @@map("User")
+}
+
+model Role {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  UserRole UserRole[]
+
+  @@map("Role")
+}
+
+model UserRole {
+  userId String
+  roleId Int
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+  @@map("UserRole")
+}
+
+model Session {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  token     String    @unique
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("Session")
 }
