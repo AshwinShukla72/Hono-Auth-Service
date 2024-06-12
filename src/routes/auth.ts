@@ -1,24 +1,31 @@
 // Imports
 import { Hono } from "hono";
 
-import { emailLoginAuth, registrationSchema } from "../schemas/auth.zodschema";
+import { emailLoginAuth, registrationSchema } from "../validations/auth.schema";
 import { zValidator } from "@hono/zod-validator";
 import { HTTPException } from "hono/http-exception";
 
 export const authRoute = new Hono()
 	.post("/login", zValidator("json", emailLoginAuth), async (c) => {
-		// c.req.json() returns a promise so, we have to the response
-		const body = await c.req.json();
-		if (!body) throw new HTTPException(400, { message: "Invalid Data" });
+		// c.req.json() returns a promise so, we have await the response
+		try {
+			const body = await c.req.json();
+			if (!body) throw new HTTPException(400, { message: "Invalid Data" });
 
-		const { email, password } = body;
-		if (!email || !password) {
-			throw new HTTPException(400, { message: "Password or Email not shared" });
+			const { email, password } = body;
+			if (!email || !password) {
+				throw new HTTPException(400, { message: "Password or Email not shared" });
+			}
+			// find user on the basis of user email -->
+			// const user = await User.find()
+			// if (!user) throw new HTTPException(401, { message: "User not found" }); 
+			if (password) {
+				throw new HTTPException(401, { message: "Unauthorized" });
+			}
+			return c.json({ success: true, message: "Access Granted" });
+		} catch (error) {
+			throw new HTTPException(500, { message: "Something went wrong" })
 		}
-		if (password) {
-			throw new HTTPException(401, { message: "Unauthorized" });
-		}
-		return c.json({ success: true, message: "Access Granted" });
 	}).post("/register", zValidator("json", registrationSchema), async (c) => {
 		try {
 			const body = await c.req.json()
@@ -38,7 +45,7 @@ export const authRoute = new Hono()
 
 			return c.json({ success: true, message: "Registration Successful" })
 		} catch (error) {
-			return c.json({ error: true, message: "Something went wring" })
+			throw new HTTPException(500, { message: "Something went wrong" })
 		}
 	})
 
