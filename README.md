@@ -30,9 +30,3 @@ To run:
 ```sh
 bun run dev
 ```
-
-```sh {"id":"01HZT9R87K1Y66RFFYX6YVB78V"}
-
-```
-
-open http://localhost:3000
