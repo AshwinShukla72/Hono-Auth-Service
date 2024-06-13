@@ -1,7 +1,24 @@
 services:
-  db:
+  hono-auth-service:
+    build:
+      context: ./
+    image: hono-auth-service:latest
+    container_name: hono-auth-service
+    ports:
+      - "3000:3000"
+    entrypoint: ["bun", "run", "src/index.ts"]
+    networks:
+      - hono-application-network
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?pgbouncer=true
+    depends_on:
+      - hono-auth-service-db
+  hono-auth-service-db:
     image: postgres:16
     restart: always
+    container_name: hono-auth-service-db
+    networks:
+      - hono-application-network
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -9,6 +26,10 @@ services:
     ports:
       - '${DB_PORT}:5432'
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - hono-auth-service-db:/var/lib/postgresql/data
 volumes:
-  postgres-data:
+  hono-auth-service-db:
+
+networks:
+  hono-application-network:
+    driver: bridge

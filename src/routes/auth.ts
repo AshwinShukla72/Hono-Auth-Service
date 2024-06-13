@@ -1,15 +1,14 @@
 // Imports
 import { Hono } from "hono";
-
-import { emailLoginAuth, registrationSchema } from "../validations/auth.schema";
+import { emailLoginAuth, registrationSchema } from '../validations/auth.schema';
 import { zValidator } from "@hono/zod-validator";
 import { HTTPException } from "hono/http-exception";
-
 export const authRoute = new Hono()
-	.post("/login", zValidator("json", emailLoginAuth), async (c) => {
+	.post("/login", zValidator("json", emailLoginAuth), async (context) => {
 		// c.req.json() returns a promise so, we have await the response
 		try {
-			const body = await c.req.json();
+			const body = await context.req.json();
+			console.log("---------------", context)
 			if (!body) throw new HTTPException(400, { message: "Invalid Data" });
 
 			const { email, password } = body;
@@ -22,13 +21,14 @@ export const authRoute = new Hono()
 			if (password) {
 				throw new HTTPException(401, { message: "Unauthorized" });
 			}
-			return c.json({ success: true, message: "Access Granted" });
+			return context.json({ success: true, message: "Access Granted" });
 		} catch (error) {
 			throw new HTTPException(500, { message: "Something went wrong" })
 		}
-	}).post("/register", zValidator("json", registrationSchema), async (c) => {
+	}).post("/register", zValidator("json", registrationSchema), async (context) => {
 		try {
-			const body = await c.req.json()
+			const body = await context.req.json()
+
 			if (!body) throw new HTTPException(400, { message: "Invalid Data" })
 
 			// hash the password
@@ -42,8 +42,7 @@ export const authRoute = new Hono()
 				throw new HTTPException(500, { message: "Something went wrong" })
 			}
 			console.log(body.password, hash, isMatch)
-
-			return c.json({ success: true, message: "Registration Successful" })
+			return context.json({ success: true, message: "Registration Successful" })
 		} catch (error) {
 			throw new HTTPException(500, { message: "Something went wrong" })
 		}
