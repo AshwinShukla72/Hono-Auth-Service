@@ -10,10 +10,7 @@ export const emailLoginAuth = z.object({
 export const registrationSchema = z
 	.object({
 		email: z.string().email('Invalid email'),
-		firstName: z
-			.string()
-			.min(1, 'First name cannot be a single character')
-			.max(80, 'First name character limit exceeded'),
+		firstName: z.string().min(1, 'First name cannot be a single character').max(80, 'First name character limit exceeded'),
 		lastName: z.string().min(1, 'Last name cannot be a single character').max(80, 'Last name character limit exceeded'),
 		password: z
 			.string()
