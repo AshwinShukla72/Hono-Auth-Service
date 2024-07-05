@@ -7,7 +7,7 @@ import { authRoute } from './routes/auth';
 const app = new Hono().basePath('api');
 
 app.use(async (c, next) => {
-	let {
+	const {
 		req: { method, url },
 	} = c;
 	console.log(`${chalk.blue(method)} ${chalk.yellow(url)}`);
