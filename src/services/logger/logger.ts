@@ -5,7 +5,7 @@ export const customLogger: MiddlewareHandler = async (c, next) => {
 	const {
 		req: { method, url },
 	} = c;
-	let body;
+	let body: unknown;
 	try {
 		body = await c.req.json();
 	} catch (err) {
