@@ -6,7 +6,6 @@ COPY package.json bun.lockb* ./
 
 # Copy the source directory and prisma schema
 COPY src ./src
-COPY prisma ./prisma
 
 # Install dependencies using bun
 RUN bun install --frozen-lockfile
